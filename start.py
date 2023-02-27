@@ -12,10 +12,10 @@ class Timer():
         print(self.start + 'stop')
         return self.start + 'stop'
 
-def start(subscribe):
-    timer_work = Timer(subscribe, time.time())
-    return timer_work
-    
+def start():
+    start_time = time.time()
+
+
 
 root = Tk()
 root.title('Timer for work')
@@ -35,9 +35,9 @@ start_btn.grid(column='0', row='2', columnspan=2, sticky=(W), pady=3)
 pause_btn = ttk.Button(root, text='PAUSE')
 pause_btn.grid(column='2', row='2')
 
-pause_btn = ttk.Button(root, text='STOP', width=40, command=timer_work.stop)
+pause_btn = ttk.Button(root, text='STOP', width=40, command=stop)
 pause_btn.grid(column='3', row='2', columnspan=2,sticky=(E))
 
 
-
+https://www.delftstack.com/ru/howto/python-tkinter/how-to-use-a-timer-in-tkinter/
 root.mainloop()
