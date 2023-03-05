@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import StringVar
 
 
 class Window(tk.Tk):
@@ -11,39 +12,38 @@ class Window(tk.Tk):
         self.geometry('500x300')
         self.obj_list = []
 
-        self.l1 = ttk.Label(self, text='text l1')
-        self.l1.grid(column=0,row=0)
-
-        self.b1 = ttk.Button(self, text='b1 test', command=self.obj_start)
-        self.b1.grid()
-
-        self.b2 = ttk.Button(self, text='object * 4', command=self.check)
-        self.b2.grid()
-
         self.e1 = ttk.Entry(self)
         self.e1.grid()
 
-    def obj_start(self):
-        a = Timer()
-        self.obj_list.append(a)
+        self.b1 = ttk.Button(self, text='write e1 to lst',
+                             command=self.writ_e1).grid()
 
-    def check(self):
-        self.l1['text'] = self.obj_list
+        self.b2 = ttk.Button(self, text='all objs',
+                             command=self.all_obj).grid()
+
+        self.l1_text = StringVar()
+        self.l1_text.set('---------')
+        self.l1 = ttk.Label(self, textvariable=self.l1_text)
+        self.l1.grid()
+
+    def writ_e1(self):
+        a = Timer()
+        a.text = self.e1.get()
+        self.obj_list.append(a)
+        self.l1_text.set(a.text)
+
+    def all_obj(self):
+
+        b = ''
+        for _ in self.obj_list: b += _.text + '\n'
+        print(b)
+        self.l1_text.set(b)
 
 
 class Timer():
     def __init__(self):
         self.info = {}
-        self.check_num = 5
-
-
-
-
-
-
-
-
-
+        self.text = ''
 
 
 if __name__ == '__main__':
