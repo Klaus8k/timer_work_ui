@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import StringVar
+from datetime import datetime
 
 
 class Window(tk.Tk):
@@ -8,42 +9,55 @@ class Window(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title('name')
+        self.title('timer for work')
         self.geometry('500x300')
         self.obj_list = []
 
-        self.e1 = ttk.Entry(self)
-        self.e1.grid()
+        self.l1 = ttk.Label(self, text='about worktack').grid()
+        self.subscribe = ttk.Entry(self)
+        self.subscribe.grid()
 
-        self.b1 = ttk.Button(self, text='write e1 to lst',
-                             command=self.writ_e1).grid()
+        self.button_start = ttk.Button(self, text='start',
+                             command=self.start_timer).grid()
 
-        self.b2 = ttk.Button(self, text='all objs',
-                             command=self.all_obj).grid()
+        self.button_pause = ttk.Button(self, text='pause',
+                             command='', default='disable').grid()
+        
+        self.button_stop = ttk.Button(self, text='stop', command=self.stop_timer).grid()
 
-        self.l1_text = StringVar()
-        self.l1_text.set('---------')
-        self.l1 = ttk.Label(self, textvariable=self.l1_text)
-        self.l1.grid()
+        self.current_text = StringVar()
+        self.current_text.set('---------')
+        self.current_task = ttk.Label(self, textvariable=self.current_text, foreground='red')
+        self.current_task.grid()
 
-    def writ_e1(self):
-        a = Timer()
-        a.text = self.e1.get()
-        self.obj_list.append(a)
-        self.l1_text.set(a.text)
+        self.all_tasks_text = StringVar()
+        # self.all_tasks_text.set('---------')
+        self.all_tasks = ttk.Label(self, textvariable=self.all_tasks_text).grid()
 
-    def all_obj(self):
+    def start_timer(self):
+        self.timer_obj = Timer()
+        self.timer_obj.text = self.subscribe.get()
+        self.obj_list.append(self.timer_obj)
+        self.current_text.set(f"{self.timer_obj.text} - {self.timer_obj.start.strftime('%H:%M:%S')}")
 
-        b = ''
-        for _ in self.obj_list: b += _.text + '\n'
-        print(b)
-        self.l1_text.set(b)
+
+    def stop_timer(self):
+        self.timer_obj.stop = datetime.now()
+        self.timer_obj.result_time = self.timer_obj.stop - self.timer_obj.start
+        self.show_all()
+
+    def show_all(self):
+        str_timers = ''
+        for i in self.obj_list:
+            str_timers += f"{i.text} --- {str(i.result_time)}\n"
+        self.all_tasks_text.set(str_timers)
 
 
 class Timer():
     def __init__(self):
-        self.info = {}
         self.text = ''
+        self.start = datetime.now()
+
 
 
 if __name__ == '__main__':
