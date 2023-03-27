@@ -1,45 +1,59 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import StringVar
 from datetime import datetime
+from tkinter import IntVar, StringVar, ttk
 
 
 class Window(tk.Tk):
-
     def __init__(self):
         super().__init__()
 
-        self.title('timer for work')
-        self.geometry('500x300')
+        self.title("timer for work")
+        self.geometry("500x300")
         self.obj_list = []
 
-        self.l1 = ttk.Label(self, text='about worktack').grid()
+        self.l1 = ttk.Label(self, text="about worktack").grid()
         self.subscribe = ttk.Entry(self)
         self.subscribe.grid()
 
-        self.button_start = ttk.Button(self, text='start',
-                             command=self.start_timer).grid()
+        self.button_start = ttk.Button(
+            self, text="start", command=self.start_timer
+        ).grid()
 
-        self.button_pause = ttk.Button(self, text='pause',
-                             command='', default='disable').grid()
-        
-        self.button_stop = ttk.Button(self, text='stop', command=self.stop_timer).grid()
+        self.button_pause = ttk.Button(
+            self, text="pause", command="", default="disable"
+        ).grid()
+
+        self.button_stop = ttk.Button(self, text="stop", command=self.stop_timer).grid()
 
         self.current_text = StringVar()
-        self.current_text.set('---------')
-        self.current_task = ttk.Label(self, textvariable=self.current_text, foreground='red')
+        self.current_text.set("---------")
+        self.current_task = ttk.Label(
+            self, textvariable=self.current_text, foreground="red"
+        )
         self.current_task.grid()
 
         self.all_tasks_text = StringVar()
         # self.all_tasks_text.set('---------')
         self.all_tasks = ttk.Label(self, textvariable=self.all_tasks_text).grid()
 
+        self.a = 0
+        self.counter = StringVar()
+        self.counter.set("-------------------")
+        self.count_lab = ttk.Label(self, textvariable=str(self.counter)).grid()
+
+    def count(self):
+        self.a += 1
+        self.counter.set(str(self.a))
+        self.after(1000, self.count)
+
     def start_timer(self):
+        self.count()
         self.timer_obj = Timer()
         self.timer_obj.text = self.subscribe.get()
         self.obj_list.append(self.timer_obj)
-        self.current_text.set(f"{self.timer_obj.text} - {self.timer_obj.start.strftime('%H:%M:%S')}")
-
+        self.current_text.set(
+            f"Задание {self.timer_obj.text}, старт: {self.timer_obj.start.strftime('%H:%M')}"
+        )
 
     def stop_timer(self):
         self.timer_obj.stop = datetime.now()
@@ -47,19 +61,18 @@ class Window(tk.Tk):
         self.show_all()
 
     def show_all(self):
-        str_timers = ''
+        str_timers = ""
         for i in self.obj_list:
             str_timers += f"{i.text} --- {str(i.result_time)}\n"
         self.all_tasks_text.set(str_timers)
 
 
-class Timer():
+class Timer:
     def __init__(self):
-        self.text = ''
+        self.text = ""
         self.start = datetime.now()
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     root = Window()
     root.mainloop()
