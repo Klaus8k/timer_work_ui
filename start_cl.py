@@ -47,7 +47,7 @@ class Window(tk.Tk):
         self.after(1000, self.count)
 
     def start_timer(self):
-        self.count()
+        self.count() # Запуска таймера
         self.timer_obj = Timer()
         self.timer_obj.text = self.subscribe.get()
         self.obj_list.append(self.timer_obj)
