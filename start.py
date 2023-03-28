@@ -9,7 +9,6 @@ def saver(timers_list: list):
         str_to_file = ''
         for _ in timers_list:
             str_to_file += f'Задание: {_.text}, время: {_.result_time}\n'
-
             file.write(str_to_file)
 
 
@@ -101,7 +100,7 @@ class App(tk.Tk):
         super().__init__()
 
         self.title('Work timer')
-        self.geometry('500x500')
+        self.geometry('420x400')
         # self.resizable(False, False)
 
 
