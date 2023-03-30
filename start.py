@@ -52,33 +52,38 @@ class Window(ttk.Frame):
         self.lbl_all_tasks = ttk.Label(textvariable=self.all_tasks)
         self.lbl_all_tasks.grid(row=4, column=0, columnspan=4)
 
+
         self.counter = StringVar()
         self.counter.set("---")
-        self.lbl_counter = ttk.Label(textvariable=str(self.counter), font='bold')
+        self.lbl_counter = ttk.Label(textvariable=self.counter, font='bold')
         self.lbl_counter.grid(row=3, column=4, columnspan=4)
 
-    @staticmethod
-    def delta_time(start):
-        delta_time = datetime.now() - start
-        return delta_time
+    def switch_button(self):
+        if self.timer_obj:
+            self.btn_stop.config(state='normal')
+            self.btn_pause.config(state='normal')
+            self.btn_start.config(state='disable')
+        else:
+            self.btn_stop.config(state='disable')
+            self.btn_pause.config(state='disable')
+            self.btn_start.config(state='normal')
+
 
     def start_timer(self):
         if self.timer_obj == None:
             self.timer_obj = Timer()
-            self.timer_obj.text = self.ent_task_text.get()
+            self.timer_obj.text = [self.ent_task_text.get(), self.timer_obj.start_end_list[0]]
             self.obj_list.append(self.timer_obj)
-            self.current_task_text.set(f'{self.timer_obj.text}, {self.timer_obj.start_end_list[0]}')
+            self.switch_button()
+            self.current_task_text.set(self.timer_obj.text)
             self.count()
         else:
             self.timer_obj.start_end_list.append(datetime.now())
-            self.count()
-        self.btn_stop.config(state='normal')
-        self.btn_pause.config(state='normal')
-        self.btn_start.config(state='disable')
 
+        
 
     def pause(self):
-    
+
         if self.timer_obj.is_paused:
             self.timer_obj.switch_pause()
             self.start_timer()
@@ -89,21 +94,19 @@ class Window(ttk.Frame):
             self.btn_start.config(state='normal')
 
 
-    #     self.btn_stop.config(state='normal')
-    #     self.btn_pause.config(state='normal')
-    #     self.btn_start.config(state='disable')
-
     def stop(self):
+
         self.timer_obj.start_end_list.append(datetime.now())
         self.count()
 
     def stop_timer(self):
-
-        self.timer_obj.start_end_list.append(datetime.now())
+        if not self.timer_obj.is_paused:
+            self.timer_obj.start_end_list.append(datetime.now())
         self.timer_obj.result = self.timer_obj.result_time()
         self.counter.set(self.timer_obj.result_time())
         self.show_all()
         self.timer_obj = None
+        self.switch_button()
 
     def show_all(self):
         str_timers = ""
@@ -143,17 +146,11 @@ class Timer:
         result = datetime.now() - datetime.now() # AAAAA, нулевой дельтатайм
         for i in range(0, len(self.start_end_list), 2):
             result += self.start_end_list[i+1] - self.start_end_list[i]
-        return result
+        return str(result).split('.')[0]
 
 
 
 if __name__ == "__main__":
-    # a = Timer()
-    # a.start_end_list = [1,3,5,9,0,5]
-    # print(a.start_end_list)
-    # print(a.result_time())
-
-
     app = App()
     Window(app)
     app.mainloop()
