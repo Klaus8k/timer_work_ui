@@ -30,7 +30,9 @@ class Window(ttk.Frame):
         self.lbl_head.grid(
             row=0, column=0, columnspan=5)
 
-        self.ent_task_text = ttk.Entry(width=50)
+        self.task_text = StringVar()
+        self.task_text.set('Task')
+        self.ent_task_text = ttk.Entry(width=50, textvariable=self.task_text)
         self.ent_task_text.grid(row=1, column=0, columnspan=5, sticky=('EW'))
 
         self.btn_start = ttk.Button(text="start", command=self.start_timer)
@@ -70,14 +72,13 @@ class Window(ttk.Frame):
 
 
     def start_timer(self):
-        if self.timer_obj == None:
-            self.timer_obj = Timer()
-            self.timer_obj.text = [self.ent_task_text.get(), self.timer_obj.start_end_list[0]]
-            self.obj_list.append(self.timer_obj)
-            self.switch_button()
-            self.current_task_text.set(self.timer_obj.text)
-            self.count()
-        # else:
+
+        self.timer_obj = Timer()
+        self.timer_obj.text = [self.ent_task_text.get(), self.timer_obj.start_end_list[0].strftime('%H:%M:%S')]
+        self.obj_list.append(self.timer_obj)
+        self.switch_button()
+        self.current_task_text.set(self.timer_obj.text)
+        self.count()
             
 
         
