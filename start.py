@@ -116,16 +116,17 @@ class Window(ttk.Frame):
 
     def count(self):
         
-        if (len(self.timer_obj.start_end_list) % 2) == 0: # На паузе или закончился таймер
-            self.counter.set(self.timer_obj.result_time())
-            self.after(1000, self.count)
+        if self.timer_obj:
+            if (len(self.timer_obj.start_end_list) % 2) == 0: # На паузе или закончился таймер
+                self.counter.set(self.timer_obj.result_time())
+                self.after(1000, self.count)
 
-        else: # Таймер в работе
-            self.timer_obj.start_end_list.append(datetime.now()) # Добавляется а потом удаляется текущее время
-            time = self.timer_obj.result_time()
-            self.timer_obj.start_end_list.pop()
-            self.counter.set(time)
-            self.after(1000, self.count)
+            else: # Таймер в работе
+                self.timer_obj.start_end_list.append(datetime.now()) # Добавляется а потом удаляется текущее время
+                time = self.timer_obj.result_time()
+                self.timer_obj.start_end_list.pop()
+                self.counter.set(time)
+                self.after(1000, self.count)
 
 
 
