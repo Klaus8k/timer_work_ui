@@ -72,13 +72,13 @@ class Window(ttk.Frame):
     def start_timer(self):
         if self.timer_obj == None:
             self.timer_obj = Timer()
-            self.timer_obj.text = [self.ent_task_text.get(), str(self.timer_obj.start_end_list[0]).split('.')[0]]
+            self.timer_obj.text = [self.ent_task_text.get(), self.timer_obj.start_end_list[0]]
             self.obj_list.append(self.timer_obj)
             self.switch_button()
             self.current_task_text.set(self.timer_obj.text)
             self.count()
-        else:
-            self.timer_obj.start_end_list.append(datetime.now())
+        # else:
+            
 
         
 
@@ -86,12 +86,11 @@ class Window(ttk.Frame):
 
         if self.timer_obj.is_paused:
             self.timer_obj.switch_pause()
-            self.start_timer()
+            self.timer_obj.start_end_list.append(datetime.now())
 
         else:
             self.timer_obj.switch_pause()
             self.stop()
-            self.btn_start.config(state='normal')
 
 
     def stop(self):
