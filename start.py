@@ -3,21 +3,36 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import IntVar, StringVar, ttk
 
+# Запись не должна удаляться, сортировка наоборот, отображение виджетов на фрейме, скрол на задачи.
 
 def saver(timers_list: list):
-    with open('timers.txt', mode='a') as file:
-        str_to_file = ''
-        for _ in timers_list:
-            str_to_file += f'Задание: {_.text}, время: {_.result_time}\n'
-            file.write(str_to_file)
+    with open('timers.json', mode='w') as file:
+        timers = []
+        for i in timers_list:
+            timers.append(
+                {
+                'date': i.start_end_list[0].strftime('%d/%m/%Y'),
+                'task': i.text[0],
+                'start_time': i.start_end_list[0].strftime('%H:%M:%S'),
+                'result': i.result,
+                })
+        json.dump(timers, file, indent=4)            
 
+def read_timer():
+    with open('timers.json', mode='r') as file:
+        old_timers = ''
+        file_date = json.load(file)
+        print(file_date)
+        for i in file_date:
+            old_timers += f"{i['task']} - {i['result']}" + '\n'
+        return old_timers
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
         self.title('Work timer')
-        self.geometry('420x400')
+        self.geometry('600x400')
         # self.resizable(False, False)
 
 class Window(ttk.Frame):
@@ -29,6 +44,15 @@ class Window(ttk.Frame):
         self.lbl_head = ttk.Label(text="Задача:")
         self.lbl_head.grid(
             row=0, column=0, columnspan=5)
+        
+        self.lbl_ends_tasks = ttk.Label(text="Выполненные:")
+        self.lbl_ends_tasks.grid(
+            row=0, column=6, sticky='E')
+        
+        self.ends_tasks = StringVar()
+        self.lbl_end_tasks_list = ttk.Label(textvariable=self.ends_tasks)
+        self.lbl_end_tasks_list.grid(
+        row=2, column=6, sticky='E')
 
         self.task_text = StringVar()
         self.task_text.set('Task')
@@ -60,6 +84,7 @@ class Window(ttk.Frame):
         self.lbl_counter = ttk.Label(textvariable=self.counter, font='bold')
         self.lbl_counter.grid(row=3, column=4, columnspan=4)
 
+
     def switch_button(self):
         if self.timer_obj:
             self.btn_stop.config(state='normal')
@@ -74,14 +99,13 @@ class Window(ttk.Frame):
     def start_timer(self):
 
         self.timer_obj = Timer()
-        self.timer_obj.text = [self.ent_task_text.get(), self.timer_obj.start_end_list[0].strftime('%H:%M:%S')]
+        self.timer_obj.text = [self.ent_task_text.get()]
         self.obj_list.append(self.timer_obj)
         self.switch_button()
-        self.current_task_text.set(self.timer_obj.text)
+        self.current_task_text.set(
+            f'{self.timer_obj.text} - {self.timer_obj.start_end_list[0].strftime("%H:%M:%S")}')
         self.count()
             
-
-        
 
     def pause(self):
 
@@ -105,14 +129,21 @@ class Window(ttk.Frame):
         self.timer_obj.result = self.timer_obj.result_time()
         self.counter.set(self.timer_obj.result_time())
         self.show_all()
+        self.save_timers()
         self.timer_obj = None
         self.switch_button()
+
+
 
     def show_all(self):
         str_timers = ""
         for i in self.obj_list:
             str_timers += f"{i.text} --- {str(i.result)}\n"
         self.all_tasks.set(str_timers)
+
+    def save_timers(self):
+        saver(self.obj_list)
+        self.ends_tasks.set(read_timer())
 
     def count(self):
         
@@ -133,10 +164,9 @@ class Window(ttk.Frame):
 class Timer:
     def __init__(self, text='t:'):
         self.text = text
-        # self.start_time = datetime.now()
         self.start_end_list = [datetime.now(),]
         self.is_paused = False
-        # self.result = datetime.now() - datetime.now()
+        self.result = False
 
     def switch_pause(self):
         self.is_paused = not self.is_paused
