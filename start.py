@@ -22,9 +22,9 @@ def read_timer():
     with open('timers.json', mode='r') as file:
         old_timers = ''
         file_date = json.load(file)
-        print(file_date)
-        for i in file_date:
-            old_timers += f"{i['task']} - {i['result']}" + '\n'
+        rev_file_date = sorted(file_date, key=lambda x: x['start_time'], reverse=True)
+        for i in rev_file_date:
+            old_timers += f"st_t: {i['start_time']}. {i['task']} - {i['result']}" + '\n'
         return old_timers
 
 class App(tk.Tk):
@@ -132,6 +132,8 @@ class Window(ttk.Frame):
         self.save_timers()
         self.timer_obj = None
         self.switch_button()
+        self.task_text.set('')
+        self.current_task_text.set('')
 
 
 
