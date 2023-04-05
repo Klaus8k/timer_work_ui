@@ -3,7 +3,7 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import IntVar, StringVar, ttk
 
-# Файл должен полностью перезаписываться,  отображение виджетов на фрейме, скрол на задачи.
+# история только за текущий день! отображение виджетов на фрейме, скрол на задачи.
 HISTORY = 'timers.json'
 
 def saver(timer: object):
@@ -54,7 +54,7 @@ class Window(ttk.Frame):
         
         self.lbl_ends_tasks = ttk.Label(text="Выполненные:")
         self.lbl_ends_tasks.grid(
-            row=0, column=6, sticky='E')
+            row=0, column=6, columnspan=4, sticky='E')
         
         self.ends_tasks = StringVar()
         self.lbl_end_tasks_list = ttk.Label(textvariable=self.ends_tasks)
