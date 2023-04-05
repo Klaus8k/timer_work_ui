@@ -3,23 +3,30 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import IntVar, StringVar, ttk
 
-# Запись не должна удаляться, сортировка наоборот, отображение виджетов на фрейме, скрол на задачи.
+# Файл должен полностью перезаписываться,  отображение виджетов на фрейме, скрол на задачи.
+HISTORY = 'timers.json'
 
-def saver(timers_list: list):
-    with open('timers.json', mode='w') as file:
+def saver(timer: object):
+    file = open(HISTORY, mode='r')
+    try:
+        timers = json.load(file)
+        file.close()
+    except json.JSONDecodeError:
         timers = []
-        for i in timers_list:
-            timers.append(
-                {
-                'date': i.start_end_list[0].strftime('%d/%m/%Y'),
-                'task': i.text[0],
-                'start_time': i.start_end_list[0].strftime('%H:%M:%S'),
-                'result': i.result,
-                })
-        json.dump(timers, file, indent=4)            
 
-def read_timer():
-    with open('timers.json', mode='r') as file:
+    timers.append(
+        {
+        'date': timer.start_end_list[0].strftime('%d/%m/%Y'),
+        'task': timer.text[0],
+        'start_time': timer.start_end_list[0].strftime('%H:%M:%S'),
+        'result': timer.result,
+        })
+    file = open(HISTORY, mode='w')
+    json.dump(timers, file, indent=4)            
+    file.close()
+
+def read_history():
+    with open(HISTORY, mode='r') as file:
         old_timers = ''
         file_date = json.load(file)
         rev_file_date = sorted(file_date, key=lambda x: x['start_time'], reverse=True)
@@ -144,8 +151,8 @@ class Window(ttk.Frame):
         self.all_tasks.set(str_timers)
 
     def save_timers(self):
-        saver(self.obj_list)
-        self.ends_tasks.set(read_timer())
+        saver(self.timer_obj)
+        self.ends_tasks.set(read_history())
 
     def count(self):
         
