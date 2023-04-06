@@ -3,9 +3,17 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import IntVar, StringVar, ttk
 
-# история только за текущий день! отображение виджетов на фрейме, скрол на задачи.
+from loguru import logger
+
+logger.debug('loguru logger')
+import sys
+
+logger.add(sys.stderr, format="{time} {level} {message}", backtrace=True, level="INFO", diagnose=True)
+
+# история только за текущий день! отображение виджетов на фрейме
 HISTORY = 'timers.json'
 
+@logger.catch
 def saver(timer: object):
     file = open(HISTORY, mode='r')
     try:
@@ -42,6 +50,8 @@ class App(tk.Tk):
         self.geometry('600x400')
         # self.resizable(False, False)
 
+@logger.catch
+@logger.trace
 class Window(ttk.Frame):
     def __init__(self, container):
         super().__init__(container)
@@ -90,6 +100,8 @@ class Window(ttk.Frame):
         self.counter.set("---")
         self.lbl_counter = ttk.Label(textvariable=self.counter, font='bold')
         self.lbl_counter.grid(row=3, column=4, columnspan=4)
+
+        read_history()
 
 
     def switch_button(self):
