@@ -1,9 +1,10 @@
+from loguru import logger
+
 import json
 import tkinter as tk
 from datetime import datetime
 from tkinter import IntVar, StringVar, ttk
 
-from loguru import logger
 
 logger.debug('loguru logger')
 import sys
@@ -13,7 +14,6 @@ logger.add(sys.stderr, format="{time} {level} {message}", backtrace=True, level=
 # история только за текущий день! отображение виджетов на фрейме
 HISTORY = 'timers.json'
 
-@logger.catch
 def saver(timer: object):
     file = open(HISTORY, mode='r')
     try:
@@ -39,7 +39,8 @@ def read_history():
         file_date = json.load(file)
         rev_file_date = sorted(file_date, key=lambda x: x['start_time'], reverse=True)
         for i in rev_file_date:
-            old_timers += f"st_t: {i['start_time']}. {i['task']} - {i['result']}" + '\n'
+            if i['date'] == datetime.today().strftime('%d/%m/%Y'):
+                old_timers += f"st_t: {i['start_time']}. {i['task']} - {i['result']}" + '\n'
         return old_timers
 
 class App(tk.Tk):
@@ -50,8 +51,6 @@ class App(tk.Tk):
         self.geometry('600x400')
         # self.resizable(False, False)
 
-@logger.catch
-@logger.trace
 class Window(ttk.Frame):
     def __init__(self, container):
         super().__init__(container)
@@ -67,6 +66,7 @@ class Window(ttk.Frame):
             row=0, column=6, columnspan=4, sticky='E')
         
         self.ends_tasks = StringVar()
+        self.ends_tasks.set(read_history())
         self.lbl_end_tasks_list = ttk.Label(textvariable=self.ends_tasks)
         self.lbl_end_tasks_list.grid(
         row=2, column=6, sticky='E')
@@ -91,7 +91,7 @@ class Window(ttk.Frame):
         self.lbl_current_task.grid(row=3, column=0, columnspan=3)
 
         self.all_tasks = StringVar()
-        self.all_tasks.set('---')
+        self.all_tasks.set('----')
         self.lbl_all_tasks = ttk.Label(textvariable=self.all_tasks)
         self.lbl_all_tasks.grid(row=4, column=0, columnspan=4)
 
@@ -100,8 +100,6 @@ class Window(ttk.Frame):
         self.counter.set("---")
         self.lbl_counter = ttk.Label(textvariable=self.counter, font='bold')
         self.lbl_counter.grid(row=3, column=4, columnspan=4)
-
-        read_history()
 
 
     def switch_button(self):
@@ -201,8 +199,12 @@ class Timer:
         return str(result).split('.')[0]
 
 
-
 if __name__ == "__main__":
-    app = App()
-    Window(app)
-    app.mainloop()
+
+    @logger.catch
+    def main():
+        app = App()
+        Window(app)
+        app.mainloop()
+
+    main()
