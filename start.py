@@ -2,7 +2,7 @@ from loguru import logger
 
 import json
 import tkinter as tk
-from datetime import datetime
+from datetime import datetime, timedelta
 from tkinter import IntVar, StringVar, ttk
 
 
@@ -11,7 +11,6 @@ import sys
 
 logger.add(sys.stderr, format="{time} {level} {message}")
 
-# отображение виджетов на фрейме
 HISTORY = 'timers.json'
 
 def saver(timer: object):
@@ -43,57 +42,45 @@ def read_history():
         rev_file_date = sorted(file_date, key=lambda x: x['start_time'], reverse=True)
         for i in rev_file_date:
             if i['date'] == datetime.today().strftime('%d/%m/%Y'):
-                old_timers += f"st_t: {i['start_time']}. {i['task']} - {i['result']} 111"
+                task = ''.join(i['task'].rstrip().lstrip().split(' '))
+                old_timers += f"{i['start_time']}_{task}___{i['result']} "
                 logger.debug(old_timers)
         return old_timers
 
 class Window(tk.Tk):
     def __init__(self):
         super().__init__()
-
         self.title('Work timer')
         self.resizable(False,False)
         self.geometry('700x300')
 
 class App_Frame(ttk.Frame):
+
     def __init__(self, container):
         super().__init__(container)
         self.timer_obj = None
         self.obj_list = []
-        
 
         self.lbl_head = ttk.Label(text="Задача:")
         self.lbl_head.grid(
-            row=0, column=0, columnspan=5)
+            row=0, column=0, columnspan=5, pady=10)
         
         self.lbl_history_tasks = ttk.Label(text=f"Задачи {datetime.today().strftime('%d/%m/%Y')}")
-        self.lbl_history_tasks.grid(
-            row=0, column=5, columnspan=2,sticky='E')
+        self.lbl_history_tasks.grid(row=0, column=5, columnspan=2,sticky='E')
         
         # list of history tasks
         self.history_l = read_history()
         self.history_val = StringVar(value=self.history_l)
-        self.history_listbox = tk.Listbox(listvariable=self.history_val)
-        self.history_listbox.grid(row=1, column=5,columnspan=2,sticky='E')
-
-
-
-        # self.ends_tasks = StringVar()
-        # self.ends_tasks.set(read_history())
-        # self.lbl_end_tasks_list = ttk.Label(textvariable=self.ends_tasks)
-        # self.lbl_end_tasks_list.grid(
-        # row=2, column=6, sticky='E')
-
-
-        
+        self.history_listbox = tk.Listbox(listvariable=self.history_val, width=30)
+        self.history_listbox.grid(row=1, column=5, columnspan=2, rowspan=3, sticky='EW', padx=10)
 
         self.task_text = StringVar()
         self.task_text.set('Task')
         self.ent_task_text = ttk.Entry(width=50, textvariable=self.task_text)
-        self.ent_task_text.grid(row=1, column=0, columnspan=5, sticky=('EW'))
+        self.ent_task_text.grid(row=1, column=0, columnspan=5, sticky=('EW'), padx=10)
 
         self.btn_start = ttk.Button(text="start", command=self.start_timer)
-        self.btn_start.grid(row=2, column=0, columnspan=2, sticky="EW")
+        self.btn_start.grid(row=2, column=0, columnspan=2, sticky="EW", padx=10)
 
         self.btn_pause = ttk.Button(text="pause", command=self.pause, state='disable')
         self.btn_pause.grid(row=2, column=2)
@@ -104,18 +91,12 @@ class App_Frame(ttk.Frame):
         self.current_task_text = StringVar()
         self.current_task_text.set("---")
         self.lbl_current_task = ttk.Label(textvariable=self.current_task_text, foreground="red")
-        self.lbl_current_task.grid(row=3, column=0, columnspan=2)
-
-        # self.all_tasks = StringVar()
-        # self.all_tasks.set('----')
-        # self.lbl_all_tasks = ttk.Label(textvariable=self.all_tasks)
-        # self.lbl_all_tasks.grid(row=4, column=0, columnspan=4)
-
+        self.lbl_current_task.grid(row=3, column=0, columnspan=4)
 
         self.counter = StringVar()
         self.counter.set("---")
         self.lbl_counter = ttk.Label(textvariable=self.counter, font='bold')
-        self.lbl_counter.grid(row=3, column=2)
+        self.lbl_counter.grid(row=3, column=3)
 
 
     def switch_button(self):
@@ -158,11 +139,11 @@ class App_Frame(ttk.Frame):
 
     @logger.catch
     def stop_timer(self):
+
         if not self.timer_obj.is_paused:
             self.timer_obj.start_end_list.append(datetime.now())
         self.timer_obj.result = self.timer_obj.result_time()
         self.counter.set(self.timer_obj.result_time())
-        # self.show_all()
         self.save_timers()
         self.timer_obj = None
         self.switch_button()
@@ -170,14 +151,7 @@ class App_Frame(ttk.Frame):
         self.current_task_text.set('')
         self.counter.set('')
 
-
-
-    def show_all(self):
-        str_timers = ""
-        for i in self.obj_list:
-            str_timers += f"{i.text} --- {str(i.result)}\n"
-        self.all_tasks.set(str_timers)
-
+    @logger.catch
     def save_timers(self):
         saver(self.timer_obj)
         self.history_val.set(read_history())
@@ -211,7 +185,7 @@ class Timer:
 
     def result_time(self):
         
-        result = datetime.now() - datetime.now() # AAAAA, нулевой дельтатайм
+        result = timedelta()
         for i in range(0, len(self.start_end_list), 2):
             result += self.start_end_list[i+1] - self.start_end_list[i]
         return str(result).split('.')[0]
