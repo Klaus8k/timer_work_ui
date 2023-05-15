@@ -1,15 +1,14 @@
-from loguru import logger
-
 import json
 import tkinter as tk
 from datetime import datetime, timedelta
 from tkinter import IntVar, StringVar, ttk
 
+# from loguru import logger
 
-logger.debug('loguru logger')
-import sys
+# logger.debug('loguru logger')
+# import sys
 
-logger.add(sys.stderr, format="{time} {level} {message}")
+# logger.add(sys.stderr, format="{time} {level} {message}")
 
 HISTORY = 'timers.json'
 
@@ -44,7 +43,7 @@ def read_history():
             if i['date'] == datetime.today().strftime('%d/%m/%Y'):
                 task = ''.join(i['task'].rstrip().lstrip().split(' '))
                 old_timers += f"{i['start_time']}_{task}___{i['result']} "
-                logger.debug(old_timers)
+                # logger.debug(old_timers)
         return old_timers
 
 class Window(tk.Tk):
@@ -137,7 +136,7 @@ class App_Frame(ttk.Frame):
         self.timer_obj.start_end_list.append(datetime.now())
         self.count()
 
-    @logger.catch
+    # @logger.catch
     def stop_timer(self):
 
         if not self.timer_obj.is_paused:
@@ -151,7 +150,7 @@ class App_Frame(ttk.Frame):
         self.current_task_text.set('')
         self.counter.set('')
 
-    @logger.catch
+    # @logger.catch
     def save_timers(self):
         saver(self.timer_obj)
         self.history_val.set(read_history())
@@ -191,13 +190,13 @@ class Timer:
         return str(result).split('.')[0]
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    @logger.catch
-    def main():
+# @logger.catch
+def main():
 
-        root = Window()
-        App_Frame(root)
-        root.mainloop()
+    root = Window()
+    App_Frame(root)
+    root.mainloop()
 
-    main()
+main()
