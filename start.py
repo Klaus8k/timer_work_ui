@@ -41,7 +41,7 @@ def read_history():
         rev_file_date = sorted(file_date, key=lambda x: x['start_time'], reverse=True)
         for i in rev_file_date:
             if i['date'] == datetime.today().strftime('%d/%m/%Y'):
-                task = ''.join(i['task'].rstrip().lstrip().split(' ')) if i['task'] else '___'
+                task = '_'.join(i['task'].rstrip().lstrip().split(' ')) if i['task'] else '___'
                 old_timers += f"{i['start_time'][:-3]}.{task}-{i['result']} "
                 # logger.debug(old_timers)
         return old_timers
