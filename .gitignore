@@ -1,4 +1,10 @@
 *.txt
+
 *.json
 timers.json
+<<<<<<< HEAD
 timer_wind/start.exe
+=======
+
+
+>>>>>>> 9abdfe5b2c849ff2c7af118bd2573ace93efcf8d
